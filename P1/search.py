@@ -197,7 +197,59 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from game import Directions
+    fringe = util.PriorityQueue()
+    sequence = util.Stack()
+    sequence.push((problem.getStartState(), [], 0))
+    fringe.push(sequence,problem.getCostOfActions([]))
+    expand = fringe.pop()
+    leaf = expand.pop()
+    expanded_nodes = []
+    while (problem.isGoalState(leaf[0]) == False):
+        expanded_flag = False
+        for node in expanded_nodes:  # Remove nodes that been developed before
+            if (node == leaf[0]):
+                expanded_flag = True
+        if (expanded_flag == False):
+            successors = problem.getSuccessors(leaf[0])
+            expanded_nodes.append(leaf[0])
+            expand.push(leaf)
+            for successor in successors:
+                expanded_flag = False
+                for leaves in expand.list:
+                    if (leaves[0] == successor[0]):
+                        expanded_flag = True
+                        break
+
+                if (expanded_flag == False):
+                    # Find a new leaf
+                    expand.push(successor)
+                    # Deep copy
+                    expand_deep_copy = util.Stack()
+                    actions = []
+                    # flag_first = True
+                    for i in expand.list:
+                        expand_deep_copy.push(i)
+                        actions.append(i[1])
+                    actions.pop(0)
+                    fringe.push(expand_deep_copy,problem.getCostOfActions(actions))
+                    expand.pop()  # prev line push successor in the end of extend. this line we reverse that
+
+        expand = fringe.pop()
+        leaf = expand.pop()
+
+    final_sequence = []
+    expand.push(leaf)
+    flag_first = True
+    for node in expand.list:
+        if (flag_first):
+            # Remove the first one because we add a leaf with beginig location, Stop Direction and zero cost.
+            flag_first = False
+            continue
+        final_sequence.append(node[1])
+
+    return final_sequence
+    # util.raiseNotDefined()
 
 
 def nullHeuristic(state, problem=None):
