@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -18,6 +18,7 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+
 
 class SearchProblem:
     """
@@ -70,7 +71,8 @@ def tinyMazeSearch(problem):
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return [s, s, w, s, w, w, s, w]
+
 
 def depthFirstSearch(problem):
     """
@@ -87,7 +89,6 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    from game import Directions
     # print("Start:", problem.getStartState())
     # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
@@ -96,85 +97,61 @@ def depthFirstSearch(problem):
     # print("One step ahead: " ,problem.isGoalState(fringe[0][0]))
     # print("Start's successors:", problem.getSuccessors(fringe[0][0]))
 
-    # According to the LIFO algorithm for DFS, we need Stack structure 
-    
-    
+    # According to the LIFO algorithm for DFS, we need Stack structure
+
     fringe = util.Stack()
     sequence = util.Stack()
-    sequence.push((problem.getStartState(),'Stop',0))
+    sequence.push((problem.getStartState(), 'Stop', 0))
     fringe.push(sequence)
     expand = fringe.pop()
-    # print("expand nodeB: ",expand)
     leaf = expand.pop()
-    # print("expand nodeA: ",expand)
 
-    # print(leaf)
-    while(problem.isGoalState(leaf[0]) == False):
+    while (problem.isGoalState(leaf[0]) == False):
         successors = problem.getSuccessors(leaf[0])
-        # print("expand nodeC: ",expand.list)
         expand.push(leaf)
-        # print("sequence type after pushed leaf in expand: ",expand)
         for successor in successors:
-            # print("successor in successors:", successor)
             expanded_flag = False
             for leaves in expand.list:
-                if (leaves[0]==successor[0]):
-                    expanded_flag =True 
-                    # print("duplicated")
+                if (leaves[0] == successor[0]):
+                    expanded_flag = True
                     break
-            if (expanded_flag== False):
-                # print("New leaf")
+            if (expanded_flag == False):
                 # Find a new leaf
-                # print("Sequence before,", expand)
                 expand.push(successor)
-                ## Deep copy
+                # Deep copy
                 expand_deep_copy = util.Stack()
                 for i in expand.list:
                     expand_deep_copy.push(i)
                 fringe.push(expand_deep_copy)
-                # print("sequence after:",expand.list)
-                expand.pop()          #Test, Maybe needed if prev line push successor to general successor
-        # print("fringe")
-        # for item_in_fringe in fringe.list:
-            # print(item_in_fringe.list)
+                expand.pop()  # prev line push successor in the end of extend. this line we reverse that
+
         expand = fringe.pop()
         leaf = expand.pop()
-        # print("Next expand node: " , leaf)
-        # print(problem.isGoalState(leaf[0]))
+
     final_sequence = []
-    # print(Directions.NORTH)
     expand.push(leaf)
     flag_first = True
     for node in expand.list:
         if (flag_first):
+            # Remove the first one because we add a leaf with beginig location, Stop Direction and zero cost.
             flag_first = False
             continue
-        # if (node[1] == 'North'):
-        #     final_sequence.append(Directions.NORTH)
-        # if (node[1] == 'East'):
-        #     final_sequence.append(Directions.EAST)
-        # if (node[1] == 'West'):
-        #     final_sequence.append(Directions.WEST)
-        # if (node[1] == 'South'):
-        #     final_sequence.append(Directions.SOUTH)
-        # if (node[1] == 'Stop'):
-        #     final_sequence.append(Directions.STOP)
-        # final_sequence.append(node[1])
         final_sequence.append(node[1])
-    
+
     return final_sequence
 
-    util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
 
+
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -182,6 +159,7 @@ def nullHeuristic(state, problem=None):
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
     return 0
+
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
