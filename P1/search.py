@@ -105,7 +105,6 @@ def depthFirstSearch(problem):
     fringe.push(sequence)
     expand = fringe.pop()
     leaf = expand.pop()
-
     while (problem.isGoalState(leaf[0]) == False):
         successors = problem.getSuccessors(leaf[0])
         expand.push(leaf)
