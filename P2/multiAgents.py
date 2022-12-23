@@ -48,7 +48,10 @@ class ReflexAgent(Agent):
         chosenIndex = random.choice(bestIndices) # Pick randomly among the best
 
         "Add more of your code here if you want to"
-
+        # print("All scores: ",gameState.getPacmanPosition() ,scores)
+        # print("bestIndices: ",bestIndices)
+        # print("LegalMoves: ", legalMoves)
+        # print("choose index: ",chosenIndex,'\n')
         return legalMoves[chosenIndex]
 
     def evaluationFunction(self, currentGameState, action):
@@ -70,20 +73,49 @@ class ReflexAgent(Agent):
         successorGameState = currentGameState.generatePacmanSuccessor(action)
         newPos = successorGameState.getPacmanPosition()
         newFood = successorGameState.getFood()
+        width = newFood.width
+        height = newFood.height
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
-        print("startpos: ",newPos)
-        print("food: ",newFood)
-        print("gost states: ",newGhostStates)
-        print("new scared time: ",newScaredTimes[0])
+        # print("startpos: ",newPos)
+        # print("food: ",newFood)
+        # print("gost states: ",newGhostStates)
+        # print("new scared time: ",newScaredTimes[0])
         "*** YOUR CODE HERE ***"
-        print("successro game state: ",successorGameState.getScore())
-
+        # print("successro game state: ",successorGameState.getScore())
+        min_manhattan = width*height #set a hig number
+        newFoodList = newFood.asList()
+        # print("foodlist",newFoodList)
+ 
+        for foodpos in newFoodList:
+            manhattandist = util.manhattanDistance(newPos, foodpos)
+            if min_manhattan > manhattandist:
+                min_manhattan = manhattandist
+        if len(newFood.asList())==0:
+            min_manhattan = 0
+        # for x in range(width):
+        #     for y in range(height):
+        #         if newFood[x][y]:
+        #             manhattandist = util.manhattanDistance(newPos, (y,x))
+        #             if min_manhattan > manhattandist:
+        #                 min_manhattan = manhattandist
+        # print("Min manhattan distance to food:",min_manhattan)
+        min_manhattan_ghost = width*height
+        for ghostState in newGhostStates:
+            if ghostState.scaredTimer<=1:
+                manhattandist = util.manhattanDistance(newPos, ghostState.getPosition())
+                if min_manhattan_ghost > manhattandist:
+                    min_manhattan_ghost = manhattandist
+        # print("Min manhattan distance to Ghost:",min_manhattan_ghost)
+        # score = 10/(min_manhattan+1) - 10/(min_manhattan_ghost+1) + 120/(len(newFoodList)+1)
+        score = 10/(min_manhattan+1) - 20/(min_manhattan_ghost+1) - 10*len(newFoodList)
+        # print("food")
         # sum_dist_foods = 0
         # for 
         # evaluation_val = 
-        
-        return successorGameState.getScore()
+        # print("score: ", score)
+        # return successorGameState.getScore()
+        return score
 
 def scoreEvaluationFunction(currentGameState):
     """
