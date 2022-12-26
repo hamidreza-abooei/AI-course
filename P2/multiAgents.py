@@ -373,7 +373,67 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
+
+        v, action = self.treeBuilder(
+            gameState, 0, 0, -float('inf'), float('inf'))
+        return action
         util.raiseNotDefined()
+
+    def treeBuilder(self, gameState, depth, agent, alpha, beta):
+        numAgents = gameState.getNumAgents()
+        if (depth >= self.depth-1) and (agent >= numAgents):   # Terminal
+            # None is the best Action any node need to take to get the best res
+            return self.evaluationFunction(gameState), None
+
+        if gameState.isWin():       # Terminal
+            return self.evaluationFunction(gameState), None
+
+        if gameState.isLose():      # Terminal
+            return self.evaluationFunction(gameState), None
+
+        if (agent >= numAgents):
+            agent = agent - numAgents
+            depth = depth + 1
+
+        # We don't need all the sequence. All we need to keep is the HEAD action
+        if agent == 0:
+            v, action = self.max_value(gameState, alpha, beta, depth, agent)
+        else:
+            v, action = self.exp_value(gameState, alpha, beta, depth, agent)
+        return v, action
+
+    def max_value(self, state, alpha, beta, depth, agent):
+        v = -float('inf')
+        legalMoves = state.getLegalActions(agent)
+        reserveBestLegalMove = None
+        for legalMove in legalMoves:
+            childGameState = state.generateSuccessor(agent, legalMove)
+            successorVal, action = self.treeBuilder(
+                childGameState, depth, agent + 1, alpha, beta)
+            if v < successorVal:
+                v = successorVal
+                reserveBestLegalMove = legalMove
+            if v > beta:
+                return v, reserveBestLegalMove
+            alpha = max(alpha, v)
+
+        return v, reserveBestLegalMove
+
+    def exp_value(self, state, alpha, beta, depth, agent):
+        v = []
+        a = []
+        legalMoves = state.getLegalActions(agent)
+        
+        for legalMove in legalMoves:
+            childGameState = state.generateSuccessor(agent, legalMove)
+            successorVal, action = self.treeBuilder(
+                childGameState, depth, agent + 1, alpha, beta)
+            v.append(successorVal)
+            a.append(action)
+        randindex = random.randint(0, len(v)-1)
+        expect = sum(v)/len(v)
+        return expect, a[randindex]
+
 
 
 def betterEvaluationFunction(currentGameState):
