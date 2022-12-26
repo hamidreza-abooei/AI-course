@@ -52,10 +52,6 @@ class ReflexAgent(Agent):
         chosenIndex = random.choice(bestIndices)
 
         "Add more of your code here if you want to"
-        # print("All scores: ",gameState.getPacmanPosition() ,scores)
-        # print("bestIndices: ",bestIndices)
-        # print("LegalMoves: ", legalMoves)
-        # print("choose index: ",chosenIndex,'\n')
         return legalMoves[chosenIndex]
 
     def evaluationFunction(self, currentGameState, action):
@@ -82,15 +78,9 @@ class ReflexAgent(Agent):
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [
             ghostState.scaredTimer for ghostState in newGhostStates]
-        # print("startpos: ",newPos)
-        # print("food: ",newFood)
-        # print("gost states: ",newGhostStates)
-        # print("new scared time: ",newScaredTimes[0])
         "*** YOUR CODE HERE ***"
-        # print("successro game state: ",successorGameState.getScore())
         min_manhattan = width*height  # set a hig number
         newFoodList = newFood.asList()
-        # print("foodlist",newFoodList)
 
         for foodpos in newFoodList:
             manhattandist = util.manhattanDistance(newPos, foodpos)
@@ -98,7 +88,6 @@ class ReflexAgent(Agent):
                 min_manhattan = manhattandist
         if len(newFood.asList()) == 0:
             min_manhattan = 0
-        # print("Min manhattan distance to food:",min_manhattan)
         min_manhattan_ghost = width*height
         for ghostState in newGhostStates:
             if ghostState.scaredTimer <= 1:
@@ -106,15 +95,9 @@ class ReflexAgent(Agent):
                     newPos, ghostState.getPosition())
                 if min_manhattan_ghost > manhattandist:
                     min_manhattan_ghost = manhattandist
-        # print("Min manhattan distance to Ghost:",min_manhattan_ghost)
-        # score = 10/(min_manhattan+1) - 10/(min_manhattan_ghost+1) + 120/(len(newFoodList)+1)
         score = 10/(min_manhattan+1) - 20 / \
             (min_manhattan_ghost+1) - 10*len(newFoodList)
-        # print("food")
-        # sum_dist_foods = 0
-        # for
-        # evaluation_val =
-        # print("score: ", score)
+
         # return successorGameState.getScore()
         return score
 
@@ -423,7 +406,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         v = []
         a = []
         legalMoves = state.getLegalActions(agent)
-        
+
         for legalMove in legalMoves:
             childGameState = state.generateSuccessor(agent, legalMove)
             successorVal, action = self.treeBuilder(
@@ -433,7 +416,6 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         randindex = random.randint(0, len(v)-1)
         expect = sum(v)/len(v)
         return expect, a[randindex]
-
 
 
 def betterEvaluationFunction(currentGameState):
@@ -452,6 +434,28 @@ def betterEvaluationFunction(currentGameState):
     ghostPositions = currentGameState.getGhostPositions()
 
     "*** YOUR CODE HERE ***"
+    if len(foods.asList()) > 0:
+        foodlist = [util.manhattanDistance(
+            pacmanPosition, food) for food in foods.asList()]
+        foodDist = min(foodlist)
+    else:
+        foodDist = 0
+    ghostDist = float('inf')
+    scaredDist = float('inf')
+    scareTime = sum(scaredTimers)
+    for ghostIndex in range(len(ghostStates)):
+        manDist = util.manhattanDistance(
+            pacmanPosition, ghostPositions[ghostIndex])
+        if (scaredTimers[ghostIndex] < 2):
+            if manDist < ghostDist:
+                ghostDist = manDist
+        else:
+            if manDist < scaredDist:
+                scaredDist = manDist
+
+    score = 10/(foodDist+1)**0.5 + 10 / (scaredDist+1) - 50 / \
+        ((ghostDist)**2+1) - 30*len(foods.asList()) + scareTime
+    return score
     util.raiseNotDefined()
 
 
