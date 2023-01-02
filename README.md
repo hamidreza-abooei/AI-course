@@ -6,7 +6,7 @@
 Different Search Algorithms in Pacman 
 - DFS
 - BFS
-- CSP
+- UCS
 - Astar
  
 ## Project2:
