@@ -16,3 +16,11 @@ Implementing Agents with different approches
 - Alpha-Beta Pruning
 - ExpectiMiniMax Agent
 - Better Evaluation Function
+
+## Project3:
+Implementing (Markov Decision Process) MDP and (Reinforcement Learning) RL
+- Value Iteration
+- Policies
+- Q-Learning
+- Approximate Q-Learning
+
